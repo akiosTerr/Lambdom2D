@@ -1,0 +1,36 @@
+{
+  "name": "game-of-life",
+  "version": "1.0.0",
+  "description": "multiplayer game",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon --exec babel-node src/server.js",
+    "bb": "watchify src/app.js -t babelify -o public/js/bundle.js -v"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akiosTerr/game-of-life.git"
+  },
+  "keywords": [
+    "game",
+    "multiplayer"
+  ],
+  "author": "akiosTerr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akiosTerr/game-of-life/issues"
+  },
+  "homepage": "https://github.com/akiosTerr/game-of-life#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/node": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.0",
+    "open": "^7.0.0",
+    "watchify": "^3.11.1"
+  }
+}
