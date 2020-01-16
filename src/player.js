@@ -1,13 +1,13 @@
 export default class Player {
-    constructor(gameWidth,gameHeight){
-        this.width = 50;
-        this.height = 50;
-        this.color = '#033';
+    constructor(game){
+        this.width = 25;
+        this.height = 25;
+        this.color = 'red';
         this.velocity = 50;
         this.accel = {x:0,y:0};
         this.position = {
-            x: gameWidth / 2 - this.width /2,
-            y: gameHeight - this.height
+            x: game.gameWidth / 2 - this.width /2,
+            y: game.gameHeight / 2 - this.height/2
         };
     }
 
