@@ -4,36 +4,32 @@ export default class InputHandler {
             if (event.isComposing || event.keyCode === 229) {
               return;
             }
-
-            if(event.keyCode === 65 ||event.keyCode === 68)
-                player.accel.x = 0;
-            if(event.keyCode === 87 ||event.keyCode === 83)
-                player.accel.y = 0;    
+           
 
           });
-        document.addEventListener("keydown", event => {
+        document.addEventListener("keypress", event => {
             let key = event.keyCode;
             switch(key) {
-                case 65:
+                case 97:
                     console.log('left');
-                    player.accel.x = -1;
+                    player.move({x:-1});
                     break;
-                case 68:
+                case 100:
                     console.log('right');
-                    player.accel.x = 1;
+                    player.move({x:1});
                     break;
-                case 87:
+                case 119:
                     console.log('up');
-                    player.accel.y = -1;
+                    player.move({y:-1});
                     break;
-                case 83:
+                case 115:
                     console.log('down');
-                    player.accel.y = 1;
+                    player.move({y:1});
                     break;
                 default:
                     console.log(key);
                     break;                
             }
-        })
+        },false)
     }
 }

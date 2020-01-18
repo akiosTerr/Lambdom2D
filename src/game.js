@@ -1,10 +1,12 @@
 import Player from "./player";
 import InputHandler from "./input";
+import {fps_counter} from "./fpsCounter"
 
 export default class Game {
-    constructor(gameWidth,gameHeight){
+    constructor(gameWidth,gameHeight,ctx){
         this.gameHeight = gameHeight;
         this.gameWidth  = gameWidth;
+        this.ctx = ctx;
     }
 
     start(){
@@ -13,20 +15,22 @@ export default class Game {
         new InputHandler(this.player);
     }
 
-    clear (ctx,color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(0,0,this.gameWidth,this.gameHeight);
+    clear (color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(0,0,this.gameWidth,this.gameHeight);
     }
     
+    update(deltatime){
+        this.gameObjects.forEach(obj => obj.update(deltatime));
+    }
+
+    draw(){
+        this.gameObjects.forEach(obj => obj.draw(this.ctx));
+        fps_counter(this.ctx);
+    }
+
     addPlayer(){
 
     }
-
-    update(deltatime){
-        this.gameObjects.forEach(object => object.update(deltatime));
-    }
-
-    draw(ctx){
-        this.gameObjects.forEach(object => object.draw(ctx));
-    }
 }
+
