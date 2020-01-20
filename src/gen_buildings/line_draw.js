@@ -4,18 +4,17 @@ import { getRandomColor, rngRound } from './../static_classes/rng'
 module.exports = class LineDraw {
 	constructor(ctx, gameWidth, gameHeight) {
 		this.ctx = ctx;
-		this.W = gameWidth;
-		this.H = gameHeight;
-		this.iterations = 25;
+		this.gameWidth = gameWidth;
+		this.gameHeight = gameHeight;
 		this.offset = 0;
-		this.offsetMin = 5;
-		this.offsetMax = 300;
+		this.offsetMin = 1;
+		this.offsetMax = 200;
 		this.min = (gameHeight / 2);
 		this.max = (gameHeight / 2);
 		this.stroke_thickness = 7;
 		this.direction = 0;
-		this.lineLenght = 80;
-		this.oscilation_speed = 17;
+		this.lineLenght = 60;
+		this.oscilation_speed = 5;
 	}
 
 	rainbowRay() {
@@ -24,7 +23,7 @@ module.exports = class LineDraw {
 
 		//this.ctx.moveTo(100,100);
 
-		while (w < this.W) {
+		while (w < this.gameWidth) {
 			let min = this.min - this.offset;
 			let max = this.max + this.offset;
 			let randHeight = rngRound(min, max);

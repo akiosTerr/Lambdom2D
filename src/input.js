@@ -7,7 +7,7 @@ export default class InputHandler {
            
 
           });
-        document.addEventListener("keypress", event => {
+        document.addEventListener("keydown", event => {
             let key = event.keyCode;
             switch(key) {
                 case 97:

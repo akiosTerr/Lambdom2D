@@ -12,26 +12,35 @@ var _rng = require("./static_classes/rng");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var GAME_WIDTH = 1600;
-var GAME_HEIGHT = 800;
-var canvas = document.getElementById('gameScreen');
-var ctx = canvas.getContext("2d");
-canvas.width = GAME_WIDTH;
-canvas.height = GAME_HEIGHT; //ctx.canvas.width = window.innerWidth;
+var GAME_HEIGHT = 800; //ctx.canvas.width = window.innerWidth;
 //ctx.canvas.height = window.innerHeight;
 
-var drawSquare = new _draw_buildings["default"](ctx, GAME_WIDTH, GAME_HEIGHT);
+var canvas = document.getElementById('gameScreen');
+var ctx = canvas.getContext('2d');
+canvas.width = GAME_WIDTH;
+canvas.height = GAME_HEIGHT;
+var btn = document.getElementById('left');
+var btn2 = document.getElementById('mid1');
+btn.addEventListener('click', pathgen);
+btn2.addEventListener('click', vec2array);
+var specs = {
+  countMin: 4,
+  countMax: 8,
+  lenghtMin: 3,
+  lenghtMax: 7
+};
+
+function vec2array() {
+  console.log((0, _rng.genRandVec2Array)(10));
+}
+
+function pathgen() {
+  var path_coordinates = (0, _rng.makeSquarePath)(specs); //drawPath(path_coordinates,ctx);
+}
+
 var ld = new _line_draw["default"](ctx, GAME_WIDTH, GAME_HEIGHT);
 var game = new _game["default"](GAME_WIDTH, GAME_HEIGHT, ctx);
 game.start();
-
-var _vecArr = (0, _rng.genRandVec2Array)(5);
-
-_vecArr.forEach(function (item) {
-  console.log(item);
-}); //let paths = drawSquare.makePath();
-//console.log(`path array:${paths}`);
-
-
 var lastTime = 0;
 
 var gameLoop = function gameLoop(timestamp) {
@@ -39,8 +48,8 @@ var gameLoop = function gameLoop(timestamp) {
   lastTime = timestamp;
   game.clear('black');
   game.update(deltaTime);
-  game.draw();
-  drawSquare.draw(); //ld.rainbowRay();
+  game.draw(); //pathgen();
+  //ld.rainbowRay(); 
 
   requestAnimationFrame(gameLoop);
 };
@@ -92,6 +101,8 @@ var _player = _interopRequireDefault(require("./player"));
 
 var _input = _interopRequireDefault(require("./input"));
 
+var _draw_buildings = _interopRequireDefault(require("./gen_buildings/draw_buildings"));
+
 var _fpsCounter = require("./fpsCounter");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
@@ -116,7 +127,8 @@ function () {
   _createClass(Game, [{
     key: "start",
     value: function start() {
-      this.player = new _player["default"](this);
+      this.player = new _player["default"](this); //this.drawBuild = new DrawBuilder(this.ctx,this.gameWidth,this.gameHeight);
+
       this.gameObjects = [this.player];
       new _input["default"](this.player);
     }
@@ -153,7 +165,7 @@ function () {
 
 exports["default"] = Game;
 
-},{"./fpsCounter":2,"./input":6,"./player":7}],4:[function(require,module,exports){
+},{"./fpsCounter":2,"./gen_buildings/draw_buildings":4,"./input":6,"./player":7}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -174,11 +186,11 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var DrawBuildings =
+var DrawBuilder =
 /*#__PURE__*/
 function () {
-  function DrawBuildings(ctx, width, height) {
-    _classCallCheck(this, DrawBuildings);
+  function DrawBuilder(ctx, width, height) {
+    _classCallCheck(this, DrawBuilder);
 
     this.ctx = ctx;
     this.width = width;
@@ -191,33 +203,37 @@ function () {
     this.lineLenghtMax = 80;
     this.start;
     this.path_array;
+    this.current_path;
     this.last_point;
   }
 
-  _createClass(DrawBuildings, [{
+  _createClass(DrawBuilder, [{
     key: "draw",
-    value: function draw() {
+    value: function draw() {}
+  }, {
+    key: "update",
+    value: function update() {}
+  }, {
+    key: "scriblings",
+    value: function scriblings() {
+      var _arr = (0, _rng.genRandVec2Array)(2);
+
       this.ctx.lineWidth = this.thickness;
-      this.ctx.strokeStyle = (0, _rng.getRandomColor)();
-      this.scriblings(); //setTimeout(() => {this.scriblings}, 1000);
+      this.ctx.strokeStyle = 'blue';
+      this.ctx.beginPath();
+      this.ctx.moveTo(_arr[0].x, _arr[0].y);
+      this.ctx.lineTo(_arr[1].x, _arr[1].y);
+      this.ctx.stroke();
     }
   }, {
     key: "draw_path",
     value: function draw_path(v2arr) {
       var start = v2arr[0];
-      this.ctx.moveTo(start.x, start.y); // v2arr.array.forEach(v2 => {
-      // });
-    }
-  }, {
-    key: "scriblings",
-    value: function scriblings() {
-      var len = 3;
-      var vec2arr = (0, _rng.genRandVec2Array)(len);
-      var start = vec2arr[0];
       this.ctx.moveTo(start.x, start.y);
+      this.ctx.beginPath();
 
-      for (var i = 1; i < vec2arr.length; i++) {
-        var obj = vec2arr[i];
+      for (var i = 1; i < v2arr.length; i++) {
+        var obj = v2arr[i];
         this.ctx.lineTo(obj.x, obj.y);
         this.ctx.stroke();
       }
@@ -225,10 +241,9 @@ function () {
   }, {
     key: "makePath",
     value: function makePath() {
-      var start = get_random_point(this.width, this.height);
+      var start = (0, _rng.getRandomPoint)(this.width, this.height);
       var line_count = (0, _rng.rngRound)(this.lineCountMin, this.lineCountMax);
-      var lineLenghts = []; //this.path_array = [];
-
+      var lineLenghts = [];
       log_vec2(start, 'start:');
       this.path_array.push(start.vector2d);
       lineLenghts = (0, _rng.genRngArray)(line_count, this.lineLenghtMin, this.lineLenghtMax);
@@ -286,10 +301,10 @@ function () {
     }
   }]);
 
-  return DrawBuildings;
+  return DrawBuilder;
 }();
 
-exports["default"] = DrawBuildings;
+exports["default"] = DrawBuilder;
 
 function log_vec2(vec, label) {
   console.log("".concat(label, " X:").concat(vec.x, " Y:").concat(vec.y));
@@ -313,18 +328,17 @@ function () {
     _classCallCheck(this, LineDraw);
 
     this.ctx = ctx;
-    this.W = gameWidth;
-    this.H = gameHeight;
-    this.iterations = 25;
+    this.gameWidth = gameWidth;
+    this.gameHeight = gameHeight;
     this.offset = 0;
-    this.offsetMin = 5;
-    this.offsetMax = 300;
+    this.offsetMin = 1;
+    this.offsetMax = 200;
     this.min = gameHeight / 2;
     this.max = gameHeight / 2;
     this.stroke_thickness = 7;
     this.direction = 0;
-    this.lineLenght = 80;
-    this.oscilation_speed = 17;
+    this.lineLenght = 60;
+    this.oscilation_speed = 5;
   }
 
   _createClass(LineDraw, [{
@@ -333,7 +347,7 @@ function () {
       this.ctx.beginPath();
       var w = 0; //this.ctx.moveTo(100,100);
 
-      while (w < this.W) {
+      while (w < this.gameWidth) {
         var min = this.min - this.offset;
         var max = this.max + this.offset;
         var randHeight = (0, _rng.rngRound)(min, max);
@@ -383,7 +397,7 @@ var InputHandler = function InputHandler(player) {
       return;
     }
   });
-  document.addEventListener("keypress", function (event) {
+  document.addEventListener("keydown", function (event) {
     var key = event.keyCode;
 
     switch (key) {
@@ -476,8 +490,6 @@ function () {
       var x = _ref2.x,
           y = _ref2.y;
 
-      //console.log('\n'+x);
-      //console.log('\n'+y);
       if (x) {
         this.accel.x = x;
       }
@@ -510,15 +522,16 @@ Object.defineProperty(exports, "__esModule", {
 exports.rngRound = rngRound;
 exports.genRngArray = genRngArray;
 exports.genRandVec2Array = genRandVec2Array;
-exports.get_random_point = get_random_point;
+exports.makeSquarePath = makeSquarePath;
+exports.getRandomPoint = getRandomPoint;
 exports.getRandomColor = getRandomColor;
 
 var _vector = _interopRequireDefault(require("./vector2"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var width = 1600;
-var height = 800;
+var gamewidth = 1600;
+var gameheight = 800;
 
 function rngRound(min_value, max_value) {
   return Math.round(Math.random() * (max_value - min_value) + min_value);
@@ -535,22 +548,52 @@ function genRngArray(len, min, max) {
 }
 
 function genRandVec2Array(len) {
-  var vec2 = new _vector["default"](0, 0);
-  var point;
+  var vec2 = new _vector["default"]();
 
   for (var i = 0; i < len; i++) {
-    point = get_random_point(width, height);
-    vec2.push_obj(point.x, point.y);
+    vec2.push_obj(getRandomPoint(gamewidth, gameheight));
   }
 
-  return vec2.path_array();
+  return vec2.a_path();
 }
 
-function get_random_point(w, h) {
-  var width = rngRound(0, w);
-  var height = rngRound(0, h);
-  var point = new _vector["default"](width, height);
-  return point.vector2d;
+function listArray(arr) {
+  arr.forEach(function (element) {
+    console.log(element);
+  });
+}
+
+function makeSquarePath(specs) {
+  var vec2 = new _vector["default"]();
+  var start = getRandomPoint(gamewidth, gameheight);
+  var lineCount = rngRound(specs.countMin, specs.countMax);
+  var lineLenghts = genRngArray(lineCount, specs.lenghtMin, specs.lenghtMax);
+  vec2.push_obj(start);
+  listArray(vec2.a_path());
+  console.log(lineLenghts);
+
+  for (var i = 0; i < lineCount; i++) {
+    if (i % 2) {
+      vec2.add_vector(lineLenghts[i], 0);
+      continue;
+    } else {
+      vec2.add_vector(0, lineLenghts[i]);
+      continue;
+    }
+  }
+
+  console.log(vec2.a_path());
+  return vec2.a_path();
+}
+
+function getRandomPoint(w, h) {
+  var x = rngRound(0, w);
+  var y = rngRound(0, h);
+  var vector2d = {
+    x: x,
+    y: y
+  };
+  return vector2d;
 }
 
 function getRandomColor() {
@@ -581,29 +624,32 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var Vector2 =
 /*#__PURE__*/
 function () {
-  function Vector2(x, y) {
+  function Vector2() {
     _classCallCheck(this, Vector2);
 
     this.vector2d = {
-      x: x,
-      y: y
+      x: 0,
+      y: 0
     };
     this.path = [];
   }
 
   _createClass(Vector2, [{
     key: "push_obj",
-    value: function push_obj(x, y) {
-      var _obj = {
-        x: x,
-        y: y
-      };
+    value: function push_obj(_obj) {
+      this.vector2d = _obj;
       this.path.push(_obj);
     }
   }, {
-    key: "path_array",
-    value: function path_array() {
-      return this.path;
+    key: "add_vector",
+    value: function add_vector(x, y) {
+      var vec = {
+        x: this.vector2d.x,
+        y: this.vector2d.y
+      };
+      vec.x += x;
+      vec.y += y;
+      this.push_obj(vec);
     }
   }, {
     key: "set_vector",
@@ -612,9 +658,9 @@ function () {
       this.vector2d.y = y;
     }
   }, {
-    key: "_path",
-    set: function set(pathArr) {
-      this.path = pathArr;
+    key: "a_path",
+    value: function a_path() {
+      return this.path;
     }
   }]);
 

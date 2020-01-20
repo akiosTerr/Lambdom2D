@@ -1,7 +1,7 @@
 import Vector2 from '../static_classes/vector2'
-import {getRandomColor,rngRound,genRngArray,genRandVec2Array} from '../static_classes/rng'
+import {getRandomPoint,getRandomColor,rngRound,genRngArray,genRandVec2Array} from '../static_classes/rng'
 
-export default class DrawBuildings{
+export default class DrawBuilder{
     constructor(ctx,width,height){
         this.ctx = ctx;        
         this.width = width;
@@ -14,43 +14,43 @@ export default class DrawBuildings{
         this.lineLenghtMax = 80;
         this.start;
         this.path_array;
+        this.current_path;
         this.last_point;
     }
 
     draw(){
+
+    }
+
+    update(){
+
+    }
+
+    scriblings(){
+        let _arr = genRandVec2Array(2);
         this.ctx.lineWidth = this.thickness;
-        this.ctx.strokeStyle = getRandomColor();
-        this.scriblings();
-        //setTimeout(() => {this.scriblings}, 1000);
+        this.ctx.strokeStyle = 'blue';
+        this.ctx.beginPath();
+        this.ctx.moveTo(_arr[0].x,_arr[0].y);
+        this.ctx.lineTo(_arr[1].x,_arr[1].y);
+        this.ctx.stroke();
     }
 
     draw_path(v2arr){
         let start = v2arr[0];
         this.ctx.moveTo(start.x,start.y);
-        // v2arr.array.forEach(v2 => {
-            
-        // });
-    }
-
-    scriblings(){
-        let len = 3;
-        let vec2arr = genRandVec2Array(len);
-        let start = vec2arr[0];
-        this.ctx.moveTo(start.x,start.y);
-        for (let i = 1; i < vec2arr.length; i++) {
-            const obj = vec2arr[i];
+        this.ctx.beginPath();
+        for (let i = 1; i < v2arr.length; i++) {
+            const obj = v2arr[i];
             this.ctx.lineTo(obj.x,obj.y);
             this.ctx.stroke();
-            
         }
     }
 
-
     makePath(){
-        let start = get_random_point(this.width,this.height);
+        let start = getRandomPoint(this.width,this.height);
         let line_count = rngRound(this.lineCountMin,this.lineCountMax);
         let lineLenghts = [];
-        //this.path_array = [];
         log_vec2(start,'start:');
         this.path_array.push(start.vector2d);
         lineLenghts = genRngArray(line_count,this.lineLenghtMin,this.lineLenghtMax);

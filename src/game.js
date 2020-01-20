@@ -1,5 +1,6 @@
 import Player from "./player";
 import InputHandler from "./input";
+import DrawBuilder from "./gen_buildings/draw_buildings"
 import {fps_counter} from "./fpsCounter"
 
 export default class Game {
@@ -11,6 +12,7 @@ export default class Game {
 
     start(){
         this.player = new Player(this);
+        //this.drawBuild = new DrawBuilder(this.ctx,this.gameWidth,this.gameHeight);
         this.gameObjects = [this.player];
         new InputHandler(this.player);
     }
@@ -29,8 +31,8 @@ export default class Game {
         fps_counter(this.ctx);
     }
 
-    addPlayer(){
-
+    addObj(obj){
+        
     }
 }
 

@@ -19,9 +19,6 @@ export default class Player {
     }
 
     move({x,y}){
-        //console.log('\n'+x);
-        //console.log('\n'+y);
-        
         if(x){
             this.accel.x = x;
         }
