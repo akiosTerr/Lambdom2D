@@ -19,7 +19,7 @@ by including common classes with usefull functions (like Vector2)
 be aware that i will try to use a functional javascript aproach everywhere i can
 so it will be a very modular project.
 
-the game will have several scripts with only exported functions for a specific purpose
+the engine will have several scripts with only exported functions for a specific purpose
 
 Like rng.js which has several functions for random number generation
 
