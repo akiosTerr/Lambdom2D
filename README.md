@@ -1,4 +1,5 @@
-# game-of-life
+# game-of-life.js
+
 ## game-of-life intends to be a custom 2d canvas game engine
 ## which will serve as a canvas boilerplate for developers
 
