@@ -1,5 +1,5 @@
 import Vector2 from '../static_classes/vector2'
-import {getRandomPoint,getRandomColor,rngRound,genRngArray,genRandVec2Array} from '../static_classes/rng'
+import {listArray,getRandomColor,getRandomPoint,makeSquarePath,rngRound,genRngArray,genRandVec2Array} from '../static_classes/rng'
 
 export default class DrawBuilder{
     constructor(ctx,width,height){
@@ -12,18 +12,31 @@ export default class DrawBuilder{
         this.lineCountMax = 7;
         this.lineLenghtMin = 30;
         this.lineLenghtMax = 80;
+        this.buildings_list = [];
         this.start;
         this.path_array;
         this.current_path;
         this.last_point;
+        this.specs = {
+            countMin: 15,
+            countMax: 25,
+            lenghtMin: 50,
+            lenghtMax: 75,
+        }
     }
 
     draw(){
-
+        this.buildings_list.forEach(e => this.draw_path(e));
     }
 
-    update(){
-
+    add_building(){
+        this.ctx.strokeStyle = getRandomColor();
+        let coord = makeSquarePath(this.specs);
+        //listArray(coord);
+        this.buildings_list.push(coord);
+        //listArray(this.buildings_list);
+        console.log(this.buildings_list);
+        
     }
 
     scriblings(){
@@ -37,9 +50,10 @@ export default class DrawBuilder{
     }
 
     draw_path(v2arr){
+        this.ctx.beginPath();
         let start = v2arr[0];
         this.ctx.moveTo(start.x,start.y);
-        this.ctx.beginPath();
+       
         for (let i = 1; i < v2arr.length; i++) {
             const obj = v2arr[i];
             this.ctx.lineTo(obj.x,obj.y);
@@ -47,7 +61,7 @@ export default class DrawBuilder{
         }
     }
 
-    makePath(){
+    makePath() {
         let start = getRandomPoint(this.width,this.height);
         let line_count = rngRound(this.lineCountMin,this.lineCountMax);
         let lineLenghts = [];

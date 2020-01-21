@@ -24,34 +24,6 @@ export function genRandVec2Array(len){
   return vec2.a_path();
 }
 
-function listArray(arr){
-  arr.forEach(element => {
-    console.log(element);
-  });
-}
-
-
-export function makeSquarePath(specs){
-  let vec2 = new Vector2();
-  let start = getRandomPoint(gamewidth,gameheight);
-  let lineCount = rngRound(specs.countMin,specs.countMax);
-  let lineLenghts = genRngArray(lineCount,specs.lenghtMin,specs.lenghtMax);
-  vec2.push_obj(start);
-  listArray(vec2.a_path());
-  console.log(lineLenghts);
-  for (let i = 0; i < lineCount; i++) {
-    if(i%2) {
-      vec2.add_vector(lineLenghts[i],0);
-      continue;
-    }else {
-      vec2.add_vector(0,lineLenghts[i]);
-      continue;
-    }
-  }
-  console.log(vec2.a_path());
-  return vec2.a_path();
-}
-
 export function getRandomPoint (w,h){
   let x = rngRound(0,w);
   let y = rngRound(0,h);
@@ -70,4 +42,37 @@ export function getRandomColor() {
   }
   return color;
 }
+
+export function listArray(arr){
+  arr.forEach(element => {
+    console.log(element);
+  });
+}
+
+
+export function makeSquarePath(specs){
+  let vec2 = new Vector2();
+  let start = getRandomPoint(gamewidth,gameheight);
+  let lineCount = rngRound(specs.countMin,specs.countMax);
+  let lineLenghts = genRngArray(lineCount,specs.lenghtMin,specs.lenghtMax);
+  vec2.push_obj(start);
+  //listArray(vec2.a_path());
+  //console.log(lineLenghts);
+  for (let i = 0; i < lineCount; i++) {
+    let a = Math.round(Math.random());
+    if(i%2) {
+      let b = (a==1) ? lineLenghts[i] : (lineLenghts[i]* -1);
+      vec2.add_vector(b,0);
+      continue;
+    }else {
+      let b = (a==1) ? lineLenghts[i] : (lineLenghts[i]* -1);
+      vec2.add_vector(0,b);
+      continue;
+    }
+  }
+  //console.log(vec2.a_path());
+  return vec2.a_path();
+}
+
+
 

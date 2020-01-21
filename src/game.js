@@ -8,12 +8,18 @@ export default class Game {
         this.gameHeight = gameHeight;
         this.gameWidth  = gameWidth;
         this.ctx = ctx;
+        
     }
 
-    start(){
+    input() {
+        this.dbuilder.add_building();
+    }
+
+    start() {
         this.player = new Player(this);
-        //this.drawBuild = new DrawBuilder(this.ctx,this.gameWidth,this.gameHeight);
+        this.dbuilder = new DrawBuilder(this.ctx,this.gameWidth,this.gameHeight);
         this.gameObjects = [this.player];
+        this.drawOnlyObjects = [this.dbuilder];
         new InputHandler(this.player);
     }
 
@@ -28,11 +34,12 @@ export default class Game {
 
     draw(){
         this.gameObjects.forEach(obj => obj.draw(this.ctx));
+        this.drawOnlyObjects.forEach(obj => obj.draw());
         fps_counter(this.ctx);
     }
 
     addObj(obj){
-        
+        this.extraObjects.push(obj);
     }
 }
 

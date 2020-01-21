@@ -1,7 +1,4 @@
 import Game from './game'
-import DrawBuilder from './gen_buildings/draw_buildings'
-import LineDraw from './gen_buildings/line_draw'
-import {makeSquarePath,genRandVec2Array} from './static_classes/rng'
 
 const GAME_WIDTH = 1600;
 const GAME_HEIGHT = 800;
@@ -13,10 +10,8 @@ const ctx = canvas.getContext('2d');
 canvas.width = GAME_WIDTH;
 canvas.height = GAME_HEIGHT;
 
-const btn = document.getElementById('left');
-const btn2 = document.getElementById('mid1');
-btn.addEventListener('click',pathgen);
-btn2.addEventListener('click',vec2array);
+//const btn2 = document.getElementById('mid1');
+//btn2.addEventListener('click',vec2array);
 
 const specs = {
     countMin: 4,
@@ -25,18 +20,15 @@ const specs = {
     lenghtMax: 7,
 }
 
-function vec2array(){
-    console.log(genRandVec2Array(10)); 
-}
-function pathgen(){
-    let path_coordinates = makeSquarePath(specs);
-    //drawPath(path_coordinates,ctx);
-}
-
-const ld = new LineDraw(ctx,GAME_WIDTH,GAME_HEIGHT);
 const game = new Game(GAME_WIDTH,GAME_HEIGHT,ctx);
-
 game.start();
+
+const btn = document.getElementById('left');
+btn.addEventListener('click',bgen);
+
+function bgen () {
+    game.input()
+}
 
 let lastTime = 0;
 const gameLoop = (timestamp) => {
@@ -45,8 +37,6 @@ const gameLoop = (timestamp) => {
     game.clear('black');
     game.update(deltaTime);
     game.draw();
-    //pathgen();
-    //ld.rainbowRay(); 
 
     requestAnimationFrame(gameLoop);
 }

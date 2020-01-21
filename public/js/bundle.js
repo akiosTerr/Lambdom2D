@@ -3,12 +3,6 @@
 
 var _game = _interopRequireDefault(require("./game"));
 
-var _draw_buildings = _interopRequireDefault(require("./gen_buildings/draw_buildings"));
-
-var _line_draw = _interopRequireDefault(require("./gen_buildings/line_draw"));
-
-var _rng = require("./static_classes/rng");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var GAME_WIDTH = 1600;
@@ -18,29 +12,24 @@ var GAME_HEIGHT = 800; //ctx.canvas.width = window.innerWidth;
 var canvas = document.getElementById('gameScreen');
 var ctx = canvas.getContext('2d');
 canvas.width = GAME_WIDTH;
-canvas.height = GAME_HEIGHT;
-var btn = document.getElementById('left');
-var btn2 = document.getElementById('mid1');
-btn.addEventListener('click', pathgen);
-btn2.addEventListener('click', vec2array);
+canvas.height = GAME_HEIGHT; //const btn2 = document.getElementById('mid1');
+//btn2.addEventListener('click',vec2array);
+
 var specs = {
   countMin: 4,
   countMax: 8,
   lenghtMin: 3,
   lenghtMax: 7
 };
-
-function vec2array() {
-  console.log((0, _rng.genRandVec2Array)(10));
-}
-
-function pathgen() {
-  var path_coordinates = (0, _rng.makeSquarePath)(specs); //drawPath(path_coordinates,ctx);
-}
-
-var ld = new _line_draw["default"](ctx, GAME_WIDTH, GAME_HEIGHT);
 var game = new _game["default"](GAME_WIDTH, GAME_HEIGHT, ctx);
 game.start();
+var btn = document.getElementById('left');
+btn.addEventListener('click', bgen);
+
+function bgen() {
+  game.input();
+}
+
 var lastTime = 0;
 
 var gameLoop = function gameLoop(timestamp) {
@@ -48,15 +37,13 @@ var gameLoop = function gameLoop(timestamp) {
   lastTime = timestamp;
   game.clear('black');
   game.update(deltaTime);
-  game.draw(); //pathgen();
-  //ld.rainbowRay(); 
-
+  game.draw();
   requestAnimationFrame(gameLoop);
 };
 
 gameLoop();
 
-},{"./game":3,"./gen_buildings/draw_buildings":4,"./gen_buildings/line_draw":5,"./static_classes/rng":8}],2:[function(require,module,exports){
+},{"./game":3}],2:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -89,7 +76,7 @@ function fps_counter(ctx) {
   (0, _ui_draw.draw_text)(fps, 'green', ctx);
 }
 
-},{"./ui_draw":10}],3:[function(require,module,exports){
+},{"./ui_draw":9}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -125,11 +112,17 @@ function () {
   }
 
   _createClass(Game, [{
+    key: "input",
+    value: function input() {
+      this.dbuilder.add_building();
+    }
+  }, {
     key: "start",
     value: function start() {
-      this.player = new _player["default"](this); //this.drawBuild = new DrawBuilder(this.ctx,this.gameWidth,this.gameHeight);
-
+      this.player = new _player["default"](this);
+      this.dbuilder = new _draw_buildings["default"](this.ctx, this.gameWidth, this.gameHeight);
       this.gameObjects = [this.player];
+      this.drawOnlyObjects = [this.dbuilder];
       new _input["default"](this.player);
     }
   }, {
@@ -153,11 +146,16 @@ function () {
       this.gameObjects.forEach(function (obj) {
         return obj.draw(_this.ctx);
       });
+      this.drawOnlyObjects.forEach(function (obj) {
+        return obj.draw();
+      });
       (0, _fpsCounter.fps_counter)(this.ctx);
     }
   }, {
-    key: "addPlayer",
-    value: function addPlayer() {}
+    key: "addObj",
+    value: function addObj(obj) {
+      this.extraObjects.push(obj);
+    }
   }]);
 
   return Game;
@@ -165,7 +163,7 @@ function () {
 
 exports["default"] = Game;
 
-},{"./fpsCounter":2,"./gen_buildings/draw_buildings":4,"./input":6,"./player":7}],4:[function(require,module,exports){
+},{"./fpsCounter":2,"./gen_buildings/draw_buildings":4,"./input":5,"./player":6}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -201,18 +199,38 @@ function () {
     this.lineCountMax = 7;
     this.lineLenghtMin = 30;
     this.lineLenghtMax = 80;
+    this.buildings_list = [];
     this.start;
     this.path_array;
     this.current_path;
     this.last_point;
+    this.specs = {
+      countMin: 15,
+      countMax: 25,
+      lenghtMin: 50,
+      lenghtMax: 75
+    };
   }
 
   _createClass(DrawBuilder, [{
     key: "draw",
-    value: function draw() {}
+    value: function draw() {
+      var _this = this;
+
+      this.buildings_list.forEach(function (e) {
+        return _this.draw_path(e);
+      });
+    }
   }, {
-    key: "update",
-    value: function update() {}
+    key: "add_building",
+    value: function add_building() {
+      this.ctx.strokeStyle = (0, _rng.getRandomColor)();
+      var coord = (0, _rng.makeSquarePath)(this.specs); //listArray(coord);
+
+      this.buildings_list.push(coord); //listArray(this.buildings_list);
+
+      console.log(this.buildings_list);
+    }
   }, {
     key: "scriblings",
     value: function scriblings() {
@@ -228,9 +246,9 @@ function () {
   }, {
     key: "draw_path",
     value: function draw_path(v2arr) {
+      this.ctx.beginPath();
       var start = v2arr[0];
       this.ctx.moveTo(start.x, start.y);
-      this.ctx.beginPath();
 
       for (var i = 1; i < v2arr.length; i++) {
         var obj = v2arr[i];
@@ -310,76 +328,7 @@ function log_vec2(vec, label) {
   console.log("".concat(label, " X:").concat(vec.x, " Y:").concat(vec.y));
 }
 
-},{"../static_classes/rng":8,"../static_classes/vector2":9}],5:[function(require,module,exports){
-"use strict";
-
-var _rng = require("./../static_classes/rng");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-module.exports =
-/*#__PURE__*/
-function () {
-  function LineDraw(ctx, gameWidth, gameHeight) {
-    _classCallCheck(this, LineDraw);
-
-    this.ctx = ctx;
-    this.gameWidth = gameWidth;
-    this.gameHeight = gameHeight;
-    this.offset = 0;
-    this.offsetMin = 1;
-    this.offsetMax = 200;
-    this.min = gameHeight / 2;
-    this.max = gameHeight / 2;
-    this.stroke_thickness = 7;
-    this.direction = 0;
-    this.lineLenght = 60;
-    this.oscilation_speed = 5;
-  }
-
-  _createClass(LineDraw, [{
-    key: "rainbowRay",
-    value: function rainbowRay() {
-      this.ctx.beginPath();
-      var w = 0; //this.ctx.moveTo(100,100);
-
-      while (w < this.gameWidth) {
-        var min = this.min - this.offset;
-        var max = this.max + this.offset;
-        var randHeight = (0, _rng.rngRound)(min, max);
-        this.ctx.lineWidth = this.stroke_thickness;
-        this.ctx.lineTo(w, randHeight);
-        this.ctx.stroke();
-        this.ctx.strokeStyle = (0, _rng.getRandomColor)(); //h = (h*-1)+300;
-
-        w += this.lineLenght;
-      } //console.log(`dir:${this.direction} offset:${this.offset}`);
-
-
-      if (this.direction == 1) {
-        this.offset += this.oscilation_speed;
-
-        if (this.offset > this.offsetMax) {
-          this.direction = 0;
-        }
-      } else {
-        this.offset -= this.oscilation_speed;
-
-        if (this.offset < this.offsetMin) {
-          this.direction = 1;
-        }
-      }
-    }
-  }]);
-
-  return LineDraw;
-}();
-
-},{"./../static_classes/rng":8}],6:[function(require,module,exports){
+},{"../static_classes/rng":7,"../static_classes/vector2":8}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -438,7 +387,7 @@ var InputHandler = function InputHandler(player) {
 
 exports["default"] = InputHandler;
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -513,7 +462,7 @@ function () {
 
 exports["default"] = Player;
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -522,9 +471,10 @@ Object.defineProperty(exports, "__esModule", {
 exports.rngRound = rngRound;
 exports.genRngArray = genRngArray;
 exports.genRandVec2Array = genRandVec2Array;
-exports.makeSquarePath = makeSquarePath;
 exports.getRandomPoint = getRandomPoint;
 exports.getRandomColor = getRandomColor;
+exports.listArray = listArray;
+exports.makeSquarePath = makeSquarePath;
 
 var _vector = _interopRequireDefault(require("./vector2"));
 
@@ -557,35 +507,6 @@ function genRandVec2Array(len) {
   return vec2.a_path();
 }
 
-function listArray(arr) {
-  arr.forEach(function (element) {
-    console.log(element);
-  });
-}
-
-function makeSquarePath(specs) {
-  var vec2 = new _vector["default"]();
-  var start = getRandomPoint(gamewidth, gameheight);
-  var lineCount = rngRound(specs.countMin, specs.countMax);
-  var lineLenghts = genRngArray(lineCount, specs.lenghtMin, specs.lenghtMax);
-  vec2.push_obj(start);
-  listArray(vec2.a_path());
-  console.log(lineLenghts);
-
-  for (var i = 0; i < lineCount; i++) {
-    if (i % 2) {
-      vec2.add_vector(lineLenghts[i], 0);
-      continue;
-    } else {
-      vec2.add_vector(0, lineLenghts[i]);
-      continue;
-    }
-  }
-
-  console.log(vec2.a_path());
-  return vec2.a_path();
-}
-
 function getRandomPoint(w, h) {
   var x = rngRound(0, w);
   var y = rngRound(0, h);
@@ -607,7 +528,40 @@ function getRandomColor() {
   return color;
 }
 
-},{"./vector2":9}],9:[function(require,module,exports){
+function listArray(arr) {
+  arr.forEach(function (element) {
+    console.log(element);
+  });
+}
+
+function makeSquarePath(specs) {
+  var vec2 = new _vector["default"]();
+  var start = getRandomPoint(gamewidth, gameheight);
+  var lineCount = rngRound(specs.countMin, specs.countMax);
+  var lineLenghts = genRngArray(lineCount, specs.lenghtMin, specs.lenghtMax);
+  vec2.push_obj(start); //listArray(vec2.a_path());
+  //console.log(lineLenghts);
+
+  for (var i = 0; i < lineCount; i++) {
+    var a = Math.round(Math.random());
+
+    if (i % 2) {
+      var b = a == 1 ? lineLenghts[i] : lineLenghts[i] * -1;
+      vec2.add_vector(b, 0);
+      continue;
+    } else {
+      var _b = a == 1 ? lineLenghts[i] : lineLenghts[i] * -1;
+
+      vec2.add_vector(0, _b);
+      continue;
+    }
+  } //console.log(vec2.a_path());
+
+
+  return vec2.a_path();
+}
+
+},{"./vector2":8}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -669,7 +623,7 @@ function () {
 
 exports["default"] = Vector2;
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
