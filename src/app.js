@@ -10,24 +10,25 @@ const ctx = canvas.getContext('2d');
 canvas.width = GAME_WIDTH;
 canvas.height = GAME_HEIGHT;
 
-//const btn2 = document.getElementById('mid1');
-//btn2.addEventListener('click',vec2array);
-
-const specs = {
-    countMin: 4,
-    countMax: 8,
-    lenghtMin: 3,
-    lenghtMax: 7,
-}
-
 const game = new Game(GAME_WIDTH,GAME_HEIGHT,ctx);
 game.start();
 
 const btn = document.getElementById('left');
-btn.addEventListener('click',bgen);
+const btn2 = document.getElementById('mid1');
+const btn3 = document.getElementById('mid2');
 
+btn.addEventListener('click',bgen);
+btn2.addEventListener('click',clear);
+btn3.addEventListener('click',line_draw);
+
+function line_draw(){
+    game.lineDrawActivate();
+}
 function bgen () {
-    game.input()
+    game.add_Plines(10);
+}
+function clear () {
+    game.clear_lines();
 }
 
 let lastTime = 0;

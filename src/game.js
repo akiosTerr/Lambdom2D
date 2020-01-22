@@ -1,6 +1,7 @@
 import Player from "./player";
 import InputHandler from "./input";
-import DrawBuilder from "./gen_buildings/draw_buildings"
+import DrawBuilder from "./procedural_generators/draw_buildings"
+import LineDraw from "./procedural_generators/line_draw"
 import {fps_counter} from "./fpsCounter"
 
 export default class Game {
@@ -11,21 +12,35 @@ export default class Game {
         
     }
 
-    input() {
-        this.dbuilder.add_building();
+    start() {
+        this.lineD = new LineDraw(this.ctx,this.gameWidth,this.gameHeight);
+        this.dbuilder = new DrawBuilder(this.ctx,this.gameWidth,this.gameHeight);
+        this.gameObjects = [];
+        this.drawOnlyObjects = [this.dbuilder,this.lineD];
+        new InputHandler(this.player);
     }
 
-    start() {
-        this.player = new Player(this);
-        this.dbuilder = new DrawBuilder(this.ctx,this.gameWidth,this.gameHeight);
-        this.gameObjects = [this.player];
-        this.drawOnlyObjects = [this.dbuilder];
-        new InputHandler(this.player);
+    lineDrawActivate (){
+        this.lineD.activation();
+    }
+
+    add_Plines(count) {
+        for (let i = 0; i < count; i++) {   
+            this.dbuilder.add_building();
+        }   
+    }
+
+    clear_lines(){
+        this.dbuilder.clear();
     }
 
     clear (color) {
         this.ctx.fillStyle = color;
         this.ctx.fillRect(0,0,this.gameWidth,this.gameHeight);
+    }
+
+    addObj(obj){
+        this.extraObjects.push(obj);
     }
     
     update(deltatime){
@@ -36,10 +51,6 @@ export default class Game {
         this.gameObjects.forEach(obj => obj.draw(this.ctx));
         this.drawOnlyObjects.forEach(obj => obj.draw());
         fps_counter(this.ctx);
-    }
-
-    addObj(obj){
-        this.extraObjects.push(obj);
     }
 }
 

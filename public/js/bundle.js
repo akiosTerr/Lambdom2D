@@ -24,10 +24,22 @@ var specs = {
 var game = new _game["default"](GAME_WIDTH, GAME_HEIGHT, ctx);
 game.start();
 var btn = document.getElementById('left');
+var btn2 = document.getElementById('mid1');
+var btn3 = document.getElementById('mid2');
 btn.addEventListener('click', bgen);
+btn2.addEventListener('click', clear);
+btn3.addEventListener('click', line_draw);
+
+function line_draw() {
+  game.lineDrawActivate();
+}
 
 function bgen() {
-  game.input();
+  game.add_Plines(10);
+}
+
+function clear() {
+  game.clear_lines();
 }
 
 var lastTime = 0;
@@ -76,7 +88,7 @@ function fps_counter(ctx) {
   (0, _ui_draw.draw_text)(fps, 'green', ctx);
 }
 
-},{"./ui_draw":9}],3:[function(require,module,exports){
+},{"./ui_draw":10}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -88,7 +100,9 @@ var _player = _interopRequireDefault(require("./player"));
 
 var _input = _interopRequireDefault(require("./input"));
 
-var _draw_buildings = _interopRequireDefault(require("./gen_buildings/draw_buildings"));
+var _draw_buildings = _interopRequireDefault(require("./procedural_generators/draw_buildings"));
+
+var _line_draw = _interopRequireDefault(require("./procedural_generators/line_draw"));
 
 var _fpsCounter = require("./fpsCounter");
 
@@ -112,18 +126,30 @@ function () {
   }
 
   _createClass(Game, [{
-    key: "input",
-    value: function input() {
-      this.dbuilder.add_building();
-    }
-  }, {
     key: "start",
     value: function start() {
-      this.player = new _player["default"](this);
+      this.lineD = new _line_draw["default"](this.ctx, this.gameWidth, this.gameHeight);
       this.dbuilder = new _draw_buildings["default"](this.ctx, this.gameWidth, this.gameHeight);
-      this.gameObjects = [this.player];
-      this.drawOnlyObjects = [this.dbuilder];
+      this.gameObjects = [];
+      this.drawOnlyObjects = [this.dbuilder, this.lineD];
       new _input["default"](this.player);
+    }
+  }, {
+    key: "lineDrawActivate",
+    value: function lineDrawActivate() {
+      this.lineD.activation();
+    }
+  }, {
+    key: "add_Plines",
+    value: function add_Plines(count) {
+      for (var i = 0; i < count; i++) {
+        this.dbuilder.add_building();
+      }
+    }
+  }, {
+    key: "clear_lines",
+    value: function clear_lines() {
+      this.dbuilder.clear();
     }
   }, {
     key: "clear",
@@ -163,172 +189,7 @@ function () {
 
 exports["default"] = Game;
 
-},{"./fpsCounter":2,"./gen_buildings/draw_buildings":4,"./input":5,"./player":6}],4:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.log_vec2 = log_vec2;
-exports["default"] = void 0;
-
-var _vector = _interopRequireDefault(require("../static_classes/vector2"));
-
-var _rng = require("../static_classes/rng");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var DrawBuilder =
-/*#__PURE__*/
-function () {
-  function DrawBuilder(ctx, width, height) {
-    _classCallCheck(this, DrawBuilder);
-
-    this.ctx = ctx;
-    this.width = width;
-    this.height = height;
-    this.thickness = 5;
-    this.color = 'blue';
-    this.lineCountMin = 4;
-    this.lineCountMax = 7;
-    this.lineLenghtMin = 30;
-    this.lineLenghtMax = 80;
-    this.buildings_list = [];
-    this.start;
-    this.path_array;
-    this.current_path;
-    this.last_point;
-    this.specs = {
-      countMin: 15,
-      countMax: 25,
-      lenghtMin: 50,
-      lenghtMax: 75
-    };
-  }
-
-  _createClass(DrawBuilder, [{
-    key: "draw",
-    value: function draw() {
-      var _this = this;
-
-      this.buildings_list.forEach(function (e) {
-        return _this.draw_path(e);
-      });
-    }
-  }, {
-    key: "add_building",
-    value: function add_building() {
-      this.ctx.strokeStyle = (0, _rng.getRandomColor)();
-      var coord = (0, _rng.makeSquarePath)(this.specs); //listArray(coord);
-
-      this.buildings_list.push(coord); //listArray(this.buildings_list);
-
-      console.log(this.buildings_list);
-    }
-  }, {
-    key: "scriblings",
-    value: function scriblings() {
-      var _arr = (0, _rng.genRandVec2Array)(2);
-
-      this.ctx.lineWidth = this.thickness;
-      this.ctx.strokeStyle = 'blue';
-      this.ctx.beginPath();
-      this.ctx.moveTo(_arr[0].x, _arr[0].y);
-      this.ctx.lineTo(_arr[1].x, _arr[1].y);
-      this.ctx.stroke();
-    }
-  }, {
-    key: "draw_path",
-    value: function draw_path(v2arr) {
-      this.ctx.beginPath();
-      var start = v2arr[0];
-      this.ctx.moveTo(start.x, start.y);
-
-      for (var i = 1; i < v2arr.length; i++) {
-        var obj = v2arr[i];
-        this.ctx.lineTo(obj.x, obj.y);
-        this.ctx.stroke();
-      }
-    }
-  }, {
-    key: "makePath",
-    value: function makePath() {
-      var start = (0, _rng.getRandomPoint)(this.width, this.height);
-      var line_count = (0, _rng.rngRound)(this.lineCountMin, this.lineCountMax);
-      var lineLenghts = [];
-      log_vec2(start, 'start:');
-      this.path_array.push(start.vector2d);
-      lineLenghts = (0, _rng.genRngArray)(line_count, this.lineLenghtMin, this.lineLenghtMax);
-
-      for (var i = 0; i < lineLenghts.length; i++) {
-        console.log(lineLenghts[i]);
-      }
-
-      console.log("Line Count:".concat(line_count));
-      console.log("lenghts:".concat(lineLenghts));
-
-      for (var _i = 0; _i < line_count; _i++) {
-        var new_point = {};
-        log_vec2(new_point, ' new point');
-
-        if (_i == line_count - 1) {
-          console.log('last loop');
-
-          if (Math.round(Math.random()) == 1) {
-            new_point.x = start.x;
-          } else {
-            new_point.y = start.y;
-          }
-
-          this.path_array.push(new_point);
-          continue;
-        }
-
-        if (_i % 2) {
-          var a = Math.round(Math.random());
-          var b = a == 1 ? lineLenghts[_i] : lineLenghts[_i] * -1;
-          console.log(b);
-          new_point.x += b;
-        } else {
-          var _a = Math.round(Math.random());
-
-          var _b = _a == 1 ? lineLenghts[_i] : lineLenghts[_i] * -1;
-
-          console.log(_b);
-          new_point.y += _b;
-        }
-
-        log_vec2(new_point, 'new point end:');
-        this.path_array.push(new_point);
-        this.last_point = new_point;
-      }
-
-      for (var _i2 = 0; _i2 < this.path_array.length; _i2++) {
-        var element = this.path_array[_i2];
-        console.log(element);
-      }
-
-      this.path_array.push(start);
-      return this.path_array;
-    }
-  }]);
-
-  return DrawBuilder;
-}();
-
-exports["default"] = DrawBuilder;
-
-function log_vec2(vec, label) {
-  console.log("".concat(label, " X:").concat(vec.x, " Y:").concat(vec.y));
-}
-
-},{"../static_classes/rng":7,"../static_classes/vector2":8}],5:[function(require,module,exports){
+},{"./fpsCounter":2,"./input":4,"./player":5,"./procedural_generators/draw_buildings":6,"./procedural_generators/line_draw":7}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -387,7 +248,7 @@ var InputHandler = function InputHandler(player) {
 
 exports["default"] = InputHandler;
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -462,7 +323,196 @@ function () {
 
 exports["default"] = Player;
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.log_vec2 = log_vec2;
+exports["default"] = void 0;
+
+var _vector = _interopRequireDefault(require("../static_classes/vector2"));
+
+var _rng = require("../static_classes/rng");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var DrawBuilder =
+/*#__PURE__*/
+function () {
+  function DrawBuilder(ctx, width, height) {
+    _classCallCheck(this, DrawBuilder);
+
+    this.ctx = ctx;
+    this.width = width;
+    this.height = height;
+    this.thickness = 5;
+    this.color = 'blue';
+    this.buildings_list = [];
+    this.start;
+    this.path_array;
+    this.current_path;
+    this.last_point;
+    this.specs = {
+      countMin: 8,
+      countMax: 25,
+      lenghtMin: 30,
+      lenghtMax: 110
+    };
+  }
+
+  _createClass(DrawBuilder, [{
+    key: "draw",
+    value: function draw() {
+      var _this = this;
+
+      this.buildings_list.forEach(function (e) {
+        return _this.draw_path(e);
+      });
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.buildings_list = [];
+    }
+  }, {
+    key: "add_building",
+    value: function add_building() {
+      var coord = (0, _rng.makeSquarePath)(this.specs); //listArray(coord);
+
+      this.buildings_list.push(coord); //listArray(this.buildings_list);
+
+      console.log(this.buildings_list);
+    }
+  }, {
+    key: "scriblings",
+    value: function scriblings() {
+      var _arr = (0, _rng.genRandVec2Array)(2);
+
+      this.ctx.lineWidth = this.thickness;
+      this.ctx.strokeStyle = 'blue';
+      this.ctx.beginPath();
+      this.ctx.moveTo(_arr[0].x, _arr[0].y);
+      this.ctx.lineTo(_arr[1].x, _arr[1].y);
+      this.ctx.stroke();
+    }
+  }, {
+    key: "draw_path",
+    value: function draw_path(v2arr) {
+      this.ctx.strokeStyle = this.color;
+      this.ctx.beginPath();
+      var start = v2arr[0];
+      this.ctx.moveTo(start.x, start.y);
+
+      for (var i = 1; i < v2arr.length; i++) {
+        var obj = v2arr[i];
+        this.ctx.lineTo(obj.x, obj.y);
+        this.ctx.stroke();
+      }
+    }
+  }]);
+
+  return DrawBuilder;
+}();
+
+exports["default"] = DrawBuilder;
+
+function log_vec2(vec, label) {
+  console.log("".concat(label, " X:").concat(vec.x, " Y:").concat(vec.y));
+}
+
+},{"../static_classes/rng":8,"../static_classes/vector2":9}],7:[function(require,module,exports){
+"use strict";
+
+var _rng = require("./../static_classes/rng");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+module.exports =
+/*#__PURE__*/
+function () {
+  function LineDraw(ctx, gameWidth, gameHeight) {
+    _classCallCheck(this, LineDraw);
+
+    this.ctx = ctx;
+    this.gameWidth = gameWidth;
+    this.gameHeight = gameHeight;
+    this.offset = 0;
+    this.offsetMin = 1;
+    this.offsetMax = 200;
+    this.min = gameHeight / 2;
+    this.max = gameHeight / 2;
+    this.stroke_thickness = 7;
+    this.direction = 0;
+    this.lineLenght = 60;
+    this.oscilation_speed = 5;
+    this.is_active = new Boolean(false);
+  }
+
+  _createClass(LineDraw, [{
+    key: "rainbowRay",
+    value: function rainbowRay() {
+      if (!this.is_active) {
+        return;
+      }
+
+      this.ctx.beginPath();
+      var w = 0; //this.ctx.moveTo(100,100);
+
+      while (w < this.gameWidth) {
+        var min = this.min - this.offset;
+        var max = this.max + this.offset;
+        var randHeight = (0, _rng.rngRound)(min, max);
+        this.ctx.lineWidth = this.stroke_thickness;
+        this.ctx.lineTo(w, randHeight);
+        this.ctx.stroke();
+        this.ctx.strokeStyle = (0, _rng.getRandomColor)(); //h = (h*-1)+300;
+
+        w += this.lineLenght;
+      } //console.log(`dir:${this.direction} offset:${this.offset}`);
+
+
+      if (this.direction == 1) {
+        this.offset += this.oscilation_speed;
+
+        if (this.offset > this.offsetMax) {
+          this.direction = 0;
+        }
+      } else {
+        this.offset -= this.oscilation_speed;
+
+        if (this.offset < this.offsetMin) {
+          this.direction = 1;
+        }
+      }
+    }
+  }, {
+    key: "activation",
+    value: function activation() {
+      this.is_active = !this.is_active;
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      this.rainbowRay();
+    }
+  }]);
+
+  return LineDraw;
+}();
+
+},{"./../static_classes/rng":8}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -561,7 +611,7 @@ function makeSquarePath(specs) {
   return vec2.a_path();
 }
 
-},{"./vector2":8}],8:[function(require,module,exports){
+},{"./vector2":9}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -623,7 +673,7 @@ function () {
 
 exports["default"] = Vector2;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

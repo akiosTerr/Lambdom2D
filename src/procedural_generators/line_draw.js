@@ -15,9 +15,14 @@ module.exports = class LineDraw {
 		this.direction = 0;
 		this.lineLenght = 60;
 		this.oscilation_speed = 5;
+		this.is_active = new Boolean(false);
 	}
 
 	rainbowRay() {
+		if(!this.is_active){
+			return
+		}
+
 		this.ctx.beginPath();
 		let w = 0;
 
@@ -47,5 +52,13 @@ module.exports = class LineDraw {
 				this.direction = 1;
 			}
 		}
+	}
+
+	activation() {
+		this.is_active = !this.is_active;
+	}
+
+	draw(){
+		this.rainbowRay();
 	}
 }
