@@ -12,15 +12,7 @@ var GAME_HEIGHT = 800; //ctx.canvas.width = window.innerWidth;
 var canvas = document.getElementById('gameScreen');
 var ctx = canvas.getContext('2d');
 canvas.width = GAME_WIDTH;
-canvas.height = GAME_HEIGHT; //const btn2 = document.getElementById('mid1');
-//btn2.addEventListener('click',vec2array);
-
-var specs = {
-  countMin: 4,
-  countMax: 8,
-  lenghtMin: 3,
-  lenghtMax: 7
-};
+canvas.height = GAME_HEIGHT;
 var game = new _game["default"](GAME_WIDTH, GAME_HEIGHT, ctx);
 game.start();
 var btn = document.getElementById('left');
@@ -29,9 +21,21 @@ var btn3 = document.getElementById('mid2');
 btn.addEventListener('click', bgen);
 btn2.addEventListener('click', clear);
 btn3.addEventListener('click', line_draw);
+var tag = new Boolean(false);
 
 function line_draw() {
   game.lineDrawActivate();
+  var child = btn3.firstElementChild;
+
+  if (tag) {
+    child.className = 'badge badge-danger';
+    child.innerHTML = 'Off';
+    tag = false;
+  } else {
+    child.className = 'badge badge-success';
+    child.innerHTML = 'On';
+    tag = true;
+  }
 }
 
 function bgen() {
@@ -158,6 +162,11 @@ function () {
       this.ctx.fillRect(0, 0, this.gameWidth, this.gameHeight);
     }
   }, {
+    key: "addObj",
+    value: function addObj(obj) {
+      this.extraObjects.push(obj);
+    }
+  }, {
     key: "update",
     value: function update(deltatime) {
       this.gameObjects.forEach(function (obj) {
@@ -176,11 +185,6 @@ function () {
         return obj.draw();
       });
       (0, _fpsCounter.fps_counter)(this.ctx);
-    }
-  }, {
-    key: "addObj",
-    value: function addObj(obj) {
-      this.extraObjects.push(obj);
     }
   }]);
 
@@ -680,11 +684,22 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.draw_text = draw_text;
+exports.get_buttons = get_buttons;
 
 function draw_text(txt, color, ctx) {
   ctx.font = "25px Impact";
   ctx.fillStyle = color;
   ctx.fillText(txt, 20, 40);
+}
+
+function get_buttons() {
+  var elements = document.getElementsByClassName('btn');
+  console.log(elements);
+  console.log(elements[0].innerHTML);
+  var obj = {};
+  elements.foreach(function (e) {
+    return console.log(obj[e.innerHtml]);
+  });
 }
 
 },{}]},{},[1]);

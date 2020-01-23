@@ -10,11 +10,26 @@
 </head>
 <body>
     <h1>Welcome to the grid</h1>
-    <canvas id="gameScreen" width="800" height="600"></canvas>
 
     <div class="inspector">
-
+        <div class="slidecontainer">
+            <p>thickness:<span id="v1">10</span> </p>
+            <input type="range" min="1" max="100" value="50" class="slider" id="SLthickness">
+            <p>Speed:</p>
+            <input type="range" min="1" max="100" value="50" class="slider" id="SLspeed">
+            <p>Min:</p>
+            <input type="range" min="1" max="100" value="50" class="slider" id="SLmin">
+            <p>Max:</p>
+            <input type="range" min="1" max="100" value="50" class="slider" id="SLmax">
+          </div>
+        </div>
+          
+          
     </div>
+
+    <canvas id="gameScreen" width="800" height="600"></canvas>
+
+    
 
     <div class="container">
          <div class="row">

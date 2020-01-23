@@ -21,8 +21,19 @@ btn.addEventListener('click',bgen);
 btn2.addEventListener('click',clear);
 btn3.addEventListener('click',line_draw);
 
+let tag = new Boolean(false);
 function line_draw(){
     game.lineDrawActivate();
+    let child = btn3.firstElementChild;
+    if(tag){
+        child.className = 'badge badge-danger';
+        child.innerHTML = 'Off'
+        tag = false;
+    }else{
+        child.className = 'badge badge-success';
+        child.innerHTML = 'On'
+        tag = true;
+    }
 }
 function bgen () {
     game.add_Plines(10);
