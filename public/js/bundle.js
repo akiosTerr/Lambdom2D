@@ -18,9 +18,16 @@ game.start();
 var btn = document.getElementById('left');
 var btn2 = document.getElementById('mid1');
 var btn3 = document.getElementById('mid2');
+var btn4 = document.getElementById('right');
 btn.addEventListener('click', bgen);
 btn2.addEventListener('click', clear);
 btn3.addEventListener('click', line_draw);
+btn4.addEventListener('click', extra);
+
+function extra() {
+  game.ld_setv(obj);
+}
+
 var tag = new Boolean(false);
 
 function line_draw() {
@@ -142,6 +149,11 @@ function () {
     key: "lineDrawActivate",
     value: function lineDrawActivate() {
       this.lineD.activation();
+    }
+  }, {
+    key: "ld_setv",
+    value: function ld_setv(obj) {
+      this.lineD.s_values(obj);
     }
   }, {
     key: "add_Plines",
@@ -453,10 +465,9 @@ function () {
     this.gameWidth = gameWidth;
     this.gameHeight = gameHeight;
     this.offset = 0;
-    this.offsetMin = 1;
-    this.offsetMax = 200;
-    this.min = gameHeight / 2;
-    this.max = gameHeight / 2;
+    this.offsetMin = 10;
+    this.offsetMax = 400;
+    this.mid = gameHeight / 2;
     this.stroke_thickness = 7;
     this.direction = 0;
     this.lineLenght = 60;
@@ -475,8 +486,8 @@ function () {
       var w = 0; //this.ctx.moveTo(100,100);
 
       while (w < this.gameWidth) {
-        var min = this.min - this.offset;
-        var max = this.max + this.offset;
+        var min = this.mid - this.offset;
+        var max = this.mid + this.offset;
         var randHeight = (0, _rng.rngRound)(min, max);
         this.ctx.lineWidth = this.stroke_thickness;
         this.ctx.lineTo(w, randHeight);
@@ -498,6 +509,33 @@ function () {
 
         if (this.offset < this.offsetMin) {
           this.direction = 1;
+        }
+      }
+    }
+  }, {
+    key: "s_values",
+    value: function s_values(obj) {
+      for (var prop in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+          if (prop == 'offsetMin') {
+            this.offsetMin = obj[prop];
+            continue;
+          }
+
+          if (prop == 'offsetMax') {
+            this.offsetMax = obj[prop];
+            continue;
+          }
+
+          if (prop == 'speed') {
+            this.oscilation_speed = obj[prop];
+            continue;
+          }
+
+          if (prop == 'thickness') {
+            this.stroke_thickness = obj[prop];
+            continue;
+          }
         }
       }
     }
@@ -685,6 +723,34 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.draw_text = draw_text;
 exports.get_buttons = get_buttons;
+exports["default"] = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var UI =
+/*#__PURE__*/
+function () {
+  function UI(ctx, game) {
+    _classCallCheck(this, UI);
+
+    this.ctx = ctx;
+    this.gameInstance = game;
+    this.btns = document.getElementsByClassName('btn');
+  }
+
+  _createClass(UI, [{
+    key: "add_event",
+    value: function add_event() {}
+  }]);
+
+  return UI;
+}();
+
+exports["default"] = UI;
 
 function draw_text(txt, color, ctx) {
   ctx.font = "25px Impact";
@@ -693,7 +759,6 @@ function draw_text(txt, color, ctx) {
 }
 
 function get_buttons() {
-  var elements = document.getElementsByClassName('btn');
   console.log(elements);
   console.log(elements[0].innerHTML);
   var obj = {};

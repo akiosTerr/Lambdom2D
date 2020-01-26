@@ -1,3 +1,14 @@
+export default class UI {
+    constructor(ctx,game){
+        this.ctx = ctx;
+        this.gameInstance = game;
+        this.btns = document.getElementsByClassName('btn');
+    }
+    add_event () {
+
+    }
+}
+
 export function draw_text(txt,color,ctx,){
     ctx.font = "25px Impact";
     ctx.fillStyle = color;
@@ -5,7 +16,7 @@ export function draw_text(txt,color,ctx,){
 }
 
 export function get_buttons(){
-    let elements = document.getElementsByClassName('btn');
+    
     console.log(elements);
     console.log(elements[0].innerHTML);
     let obj = {};

@@ -24,6 +24,10 @@ export default class Game {
         this.lineD.activation();
     }
 
+    ld_setv(obj){
+        this.lineD.s_values(obj);
+    }
+
     add_Plines(count) {
         for (let i = 0; i < count; i++) {   
             this.dbuilder.add_building();

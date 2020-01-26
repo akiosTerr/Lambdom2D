@@ -16,10 +16,16 @@ game.start();
 const btn = document.getElementById('left');
 const btn2 = document.getElementById('mid1');
 const btn3 = document.getElementById('mid2');
+const btn4 = document.getElementById('right');
 
 btn.addEventListener('click',bgen);
 btn2.addEventListener('click',clear);
 btn3.addEventListener('click',line_draw);
+btn4.addEventListener('click',extra);
+
+function extra(){
+    game.ld_setv(obj);
+}
 
 let tag = new Boolean(false);
 function line_draw(){

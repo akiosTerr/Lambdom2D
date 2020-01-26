@@ -7,10 +7,9 @@ module.exports = class LineDraw {
 		this.gameWidth = gameWidth;
 		this.gameHeight = gameHeight;
 		this.offset = 0;
-		this.offsetMin = 1;
-		this.offsetMax = 200;
-		this.min = (gameHeight / 2);
-		this.max = (gameHeight / 2);
+		this.offsetMin = 10;
+		this.offsetMax = 400;
+		this.mid = (gameHeight / 2);
 		this.stroke_thickness = 7;
 		this.direction = 0;
 		this.lineLenght = 60;
@@ -29,8 +28,8 @@ module.exports = class LineDraw {
 		//this.ctx.moveTo(100,100);
 
 		while (w < this.gameWidth) {
-			let min = this.min - this.offset;
-			let max = this.max + this.offset;
+			let min = this.mid - this.offset;
+			let max = this.mid + this.offset;
 			let randHeight = rngRound(min, max);
 			this.ctx.lineWidth = this.stroke_thickness;
 			this.ctx.lineTo(w, randHeight);
@@ -50,6 +49,29 @@ module.exports = class LineDraw {
 			this.offset -= this.oscilation_speed;
 			if (this.offset < this.offsetMin) {
 				this.direction = 1;
+			}
+		}
+	}
+
+	s_values (obj){
+		for (var prop in obj) {
+			if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+				if(prop == 'offsetMin'){
+					this.offsetMin = obj[prop];
+					continue;
+				}
+				if(prop == 'offsetMax'){
+					this.offsetMax = obj[prop];
+					continue;
+				}
+				if(prop == 'speed'){
+					this.oscilation_speed = obj[prop];
+					continue;
+				}
+				if(prop == 'thickness'){
+					this.stroke_thickness = obj[prop];
+					continue;
+				}
 			}
 		}
 	}
