@@ -1,8 +1,8 @@
 # game-of-life.js
 
 ## game-of-life intends to be a custom 2d canvas game engine
-## which will serve as a canvas boilerplate for developers
-
+ 
+this library  will serve as a canvas boilerplate for developers
 it should have most of the common tools for building a **2d canvas web app**
 
 the process of building the custom game engine (or canvas boilerplate)
