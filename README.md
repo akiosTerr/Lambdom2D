@@ -1,6 +1,6 @@
 # game-of-life.js
 
-## game-of-life is a custom 2d canvas game engine boilerplate
+## game-of-life is a custom 2d canvas game engine boilerplate for procedural generation
 
 ![Gif](https://i.gyazo.com/b12bf1ba4501952538cec4fbe34fd001.gif)
 Format: ![Alt Text](url)
