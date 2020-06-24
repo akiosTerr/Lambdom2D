@@ -1,4 +1,4 @@
-# game-of-life.js (WIP) 
+# Lambdom2D (WIP) 
 
 ## A functional Canvas boilerplate for procedural generation
 
