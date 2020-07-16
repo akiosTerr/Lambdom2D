@@ -6,4 +6,8 @@
  
 ### A highly modular library for producing graphics procedurally in the HTML5 Canvas
 
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
+
+
 
